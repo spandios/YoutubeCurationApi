@@ -34,13 +34,12 @@ public class AuthController {
             return ResponseEntity.badRequest().body(errors);
         }
         AuthDto.JwtResponse jwtResponse = authService.socialLogin(login);
-        Cookie accessToken = new Cookie("accessToken", jwtResponse.accessToken);
-        Cookie refreshToken = new Cookie("refreshToken", jwtResponse.refreshToken);
+        Cookie accessToken = new Cookie("access_token", jwtResponse.accessToken);
+        Cookie refreshToken = new Cookie("refresh_token", jwtResponse.refreshToken);
         refreshToken.setHttpOnly(true);
         response.addCookie(accessToken);
         response.addCookie(refreshToken);
-
-        return ResponseEntity.ok(authService.socialLogin(login));
+        return ResponseEntity.ok(jwtResponse);
     }
 
     @PostMapping(value = "/refresh_token")

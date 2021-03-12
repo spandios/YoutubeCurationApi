@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -44,7 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeRequests().antMatchers(String.join("", PermitWithNoTokenUrl.url)).permitAll()
+                .authorizeRequests().antMatchers("/api/v1/auth/login", "/api/v1/auth/refresh_token", "/api/v1/health_check","/api/v1", "/api/v1/curation/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
