@@ -1,16 +1,17 @@
 package com.youtube_timestamp.api.auth.service;
 
 import com.youtube_timestamp.api.auth.dto.AuthDto;
-import com.youtube_timestamp.api.common.exception.UnAuthorizedException;
 import com.youtube_timestamp.api.user.entity.UserEntity;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -50,11 +51,17 @@ public class JwtService {
 
     public Boolean validateToken(String token, String email) {
         final String tokenEmail = getEmailFromToken(token);
+        if(tokenEmail == null){
+            return false;
+        }
         return (tokenEmail.equals(email)) && !isTokenExpired(token);
     }
 
-    public String getEmailFromToken(String token) throws JwtException {
+    public String getEmailFromToken(String token) {
         Claims claims = tokenToClaims(token);
+        if(claims == null || claims.get("email") == null){
+            return null;
+        }
         return claims.get("email").toString();
     }
 
@@ -74,12 +81,9 @@ public class JwtService {
                     .build()
                     .parseClaimsJws(token);
             return claimsJws.getBody();
-        } catch (ExpiredJwtException e) {
-            throw new UnAuthorizedException("Token Expired");
         } catch (Exception e) {
-            System.out.println(" Some other exception in JWT parsing ");
+            return null;
         }
-        return null;
     }
 
     // JWT 토큰에서 인증 정보 조회

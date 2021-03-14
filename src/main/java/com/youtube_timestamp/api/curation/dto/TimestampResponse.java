@@ -8,10 +8,12 @@ public class TimestampResponse {
     Long id;
     String title;
     String timestamp;
+    String second;
 
     public TimestampResponse(Timestamp timestamp){
         this.id= timestamp.getId();
         this.timestamp= timestamp.getTimestamp();
         this.title= timestamp.getTitle();
+        this.second = timestamp.getSecond();
     }
 }

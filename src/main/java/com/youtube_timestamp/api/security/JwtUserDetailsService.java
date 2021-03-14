@@ -26,7 +26,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        com.youtube_timestamp.api.user.entity.UserEntity user = userRepository.findByEmail(email)
+        com.youtube_timestamp.api.user.entity.UserEntity user = userRepository.findByEmailAndActiveTrue(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         grantedAuthorities.add(new SimpleGrantedAuthority(UserRole.USER.getValue()));
@@ -34,11 +34,11 @@ public class JwtUserDetailsService implements UserDetailsService {
             grantedAuthorities.add(new SimpleGrantedAuthority(UserRole.ADMIN.getValue()));
         }
 
-        return new SecurityUser(user.getId(),user.getEmail(), user.getProviderId(), user.getName(), grantedAuthorities);
+        return new CurrentUser(user.getId(),user.getEmail(), user.getProviderId(), user.getName(), grantedAuthorities);
     }
 
     public com.youtube_timestamp.api.user.entity.UserEntity authenticateByEmailAndPassword(String email, String password) {
-        com.youtube_timestamp.api.user.entity.UserEntity user = userRepository.findByEmail(email)
+        com.youtube_timestamp.api.user.entity.UserEntity user = userRepository.findByEmailAndActiveTrue(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
 
         if(!passwordEncoder.matches(password, user.getProviderId())) {

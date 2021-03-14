@@ -1,5 +1,7 @@
 package com.youtube_timestamp.api.curation.repository;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.youtube_timestamp.api.curation.entity.Curation;
 
 import com.youtube_timestamp.api.curation.entity.QCuration;
@@ -24,6 +26,6 @@ public class CurationCustomRepositoryImpl extends QuerydslRepositorySupport impl
 
     @Override
     public List<Curation> myList(UserEntity user) {
-        return from(qCuration).join(qCuration.user,qUser).where(qUser.email.eq(user.getEmail())).fetch();
+        return from(qCuration).join(qCuration.user,qUser).orderBy(new OrderSpecifier<>(Order.DESC,qCuration.createdAt)).limit(6).where(qUser.email.eq(user.getEmail())).fetch();
     }
 }

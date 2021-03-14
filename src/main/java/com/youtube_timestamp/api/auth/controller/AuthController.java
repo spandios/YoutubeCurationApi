@@ -3,7 +3,6 @@ package com.youtube_timestamp.api.auth.controller;
 import com.youtube_timestamp.api.auth.dto.AuthDto;
 import com.youtube_timestamp.api.auth.service.AuthService;
 import com.youtube_timestamp.api.common.exception.UnAuthorizedException;
-import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,12 +43,9 @@ public class AuthController {
 
     @PostMapping(value = "/refresh_token")
     public ResponseEntity refresh(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("refreshToken")).findFirst().orElseThrow(() -> new UnAuthorizedException("재발급 토큰이 없습니다.")).getValue();
-        if (StringUtil.isNullOrEmpty(refreshToken)) {
-            throw new UnAuthorizedException("재발급 토큰이 없습니다.");
-        }
+        String refreshToken = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("refresh_token")).findFirst().orElseThrow(() -> new UnAuthorizedException("재발급 토큰이 없습니다.")).getValue();
         String accessToken = authService.refreshToken(refreshToken);
-        Cookie cookie = new Cookie("accessToken", accessToken);
+        Cookie cookie = new Cookie("access_token", accessToken);
         response.addCookie(cookie);
         AuthDto.JwtResponse jwtResponse = new AuthDto.JwtResponse(accessToken);
         return ResponseEntity.ok(jwtResponse);

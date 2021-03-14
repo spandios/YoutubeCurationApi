@@ -49,6 +49,7 @@ public class AuthService {
                     .providerId(passwordEncoder.encode(loginDto.providerId))
                     .build();
             UserEntity createdUser = userService.createUser(userEntity);
+            System.out.printf(createdUser.getName());
             return jwtService.createToken(createdUser);
         }
     }

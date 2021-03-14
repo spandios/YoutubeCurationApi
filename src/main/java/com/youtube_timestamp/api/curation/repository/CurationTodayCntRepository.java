@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface CurationTodayCntRepository extends JpaRepository<CurationTodayCnt, Long> {
     Optional<CurationTodayCnt> findByTodayAndCuration(LocalDate today, Curation curation);
 
-    @EntityGraph(attributePaths = "curation")
+    @EntityGraph(attributePaths = {"curation"})
     @Query("select ct from CurationTodayCnt ct where ct.today = ?1 and ct.active = true order by ct.cnt desc ")
     List<CurationTodayCnt> findTodayPopular(LocalDate today);
 }

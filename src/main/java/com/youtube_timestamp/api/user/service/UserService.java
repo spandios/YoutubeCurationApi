@@ -17,6 +17,6 @@ public class UserService {
     }
 
     public UserEntity findByEmail(String email) {
-        return this.userRepository.findByEmail(email).orElse(null);
+        return this.userRepository.findByEmailAndActiveTrue(email).orElse(null);
     }
 }

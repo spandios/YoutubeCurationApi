@@ -2,7 +2,7 @@ package com.youtube_timestamp.api.curation.dto;
 
 import com.youtube_timestamp.api.curation.entity.Curation;
 import com.youtube_timestamp.api.curation.entity.Timestamp;
-import com.youtube_timestamp.api.user.entity.UserEntity;
+import com.youtube_timestamp.api.youtube.entity.Youtube;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,14 +18,14 @@ public class CurationCreateDTO {
     @NotEmpty(message = NecessaryField)
     String title;
     @NotEmpty(message = NecessaryField)
-    String youtube_url;
-    @NotEmpty(message = NecessaryField)
     List<Timestamp> timestamp;
-
-    UserEntity userEntity;
+    @NotEmpty(message = NecessaryField)
+    String userEmail;
+    @NotEmpty(message = NecessaryField)
+    Youtube youtube;
 
     public Curation toEntity() {
-        return Curation.builder().user(userEntity).title(this.title).youtubeUrl(this.youtube_url).timestamp(this.timestamp).build();
+        return Curation.builder().youtube(youtube).title(this.title).timestamp(this.timestamp).build();
     }
 
 }

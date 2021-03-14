@@ -2,12 +2,13 @@ package com.youtube_timestamp.api.curation.controller;
 
 import com.youtube_timestamp.api.common.exception.UnAuthorizedException;
 import com.youtube_timestamp.api.curation.dto.CurationCreateDTO;
-import com.youtube_timestamp.api.curation.dto.CurationResponse;
+import com.youtube_timestamp.api.curation.dto.CurationDetailResponse;
+import com.youtube_timestamp.api.curation.dto.CurationListResponse;
 import com.youtube_timestamp.api.curation.entity.Curation;
 import com.youtube_timestamp.api.curation.service.CurationService;
 import com.youtube_timestamp.api.curation.service.CurationTodayCntService;
+import com.youtube_timestamp.api.security.Jwt;
 import com.youtube_timestamp.api.security.CurrentUser;
-import com.youtube_timestamp.api.security.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,17 +33,25 @@ public class CurationController {
     }
 
     @GetMapping("me")
-    ResponseEntity myList(@CurrentUser SecurityUser sc) {
-        List<Curation> curationEntities = curationService.myList(sc.toUser());
-        return ResponseEntity.ok(curationEntities.stream().map(CurationResponse::new));
+    ResponseEntity myList(@Jwt CurrentUser sc) {
+        if(sc != null){
+            List<Curation> curationEntities = curationService.myList(sc.toUser());
+            return ResponseEntity.ok(curationEntities.stream().map(CurationListResponse::new));
+        }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
-    ResponseEntity detail(@PathVariable("id") Long id) {
+    ResponseEntity detail(@Jwt CurrentUser cu, @PathVariable("id") Long id) {
+        log.debug("detail");
         Curation curation = curationService.findByIdWithJoin(id);
         curationTodayCntService.viewCuration(curation);
         curationService.view(curation);
-        return ResponseEntity.ok(new CurationResponse(curation));
+        CurationDetailResponse dResponse = new CurationDetailResponse(curation);
+        if(cu != null && curation.getUser().getEmail().equals(cu.getEmail())){
+            dResponse.setYours(true);
+        }
+        return ResponseEntity.ok(dResponse);
     }
 
     @GetMapping("")
@@ -56,11 +65,11 @@ public class CurationController {
     }
 
     @PostMapping("/")
-    ResponseEntity createCuration(@CurrentUser SecurityUser sc, @RequestBody CurationCreateDTO dto) {
+    ResponseEntity createCuration(@Jwt CurrentUser sc, @RequestBody CurationCreateDTO dto) {
         if(sc == null){
             throw new UnAuthorizedException();
         }
-        dto.setUserEntity(sc.toUser());
+        dto.setUserEmail(sc.getEmail());
         return ResponseEntity.ok(curationService.create(dto));
     }
 

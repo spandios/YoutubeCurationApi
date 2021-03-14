@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.youtube_timestamp.api.curation.dto.CurationCreateDTO;
 import com.youtube_timestamp.api.curation.entity.Curation;
 import com.youtube_timestamp.api.curation.entity.Timestamp;
+import com.youtube_timestamp.api.youtube.entity.Youtube;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,11 +43,13 @@ public class CurationE2ETest extends BaseTest {
         for(int i=0; i<10;i++){
             CurationCreateDTO dto = new CurationCreateDTO();
             dto.setTitle("curation title"+ i);
-            dto.setYoutube_url("youtube_url");
-            dto.setUserEntity(userEntity);
+            dto.setUserEmail(userEntity.getEmail());
+            Youtube youtube = new Youtube("xFvqUXBivTQ","【왕날편】 20/01/23 새로운 영상은 풋내가 나서 못 보겠습니다","침착맨,이말년,침투부",24,"https://www.youtube.com/watch?v=xFvqUXBivTQ","https://i.ytimg.com/vi/xFvqUXBivTQ/maxresdefault.jpg","침착맨");
+            dto.setYoutube(youtube);
             List<Timestamp> tsl = new ArrayList<>();
             Timestamp ts = new Timestamp();
             ts.setTimestamp("13:33");
+            ts.setSecond("30");
             ts.setTitle("timestamp title");
             tsl.add(ts);
             dto.setTimestamp(tsl);
@@ -58,7 +61,9 @@ public class CurationE2ETest extends BaseTest {
     public void 큐레이션_생성() throws Exception {
         CurationCreateDTO dto = new CurationCreateDTO();
         dto.setTitle("curation title");
-        dto.setYoutube_url("youtube_url");
+        dto.setUserEmail(userEntity.getEmail());
+        Youtube youtube = new Youtube("xFvqUXBivTQ","【왕날편】 20/01/23 새로운 영상은 풋내가 나서 못 보겠습니다","침착맨,이말년,침투부",24,"https://www.youtube.com/watch?v=xFvqUXBivTQ","https://i.ytimg.com/vi/xFvqUXBivTQ/maxresdefault.jpg","침착맨");
+        dto.setYoutube(youtube);
         List<Timestamp> tsl = new ArrayList<>();
         Timestamp ts = new Timestamp();
         ts.setTimestamp("13:33");

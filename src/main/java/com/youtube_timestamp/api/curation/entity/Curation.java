@@ -3,6 +3,7 @@ package com.youtube_timestamp.api.curation.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.youtube_timestamp.api.common.base.AbstractEntity;
 import com.youtube_timestamp.api.user.entity.UserEntity;
+import com.youtube_timestamp.api.youtube.entity.Youtube;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "curation")
-@ToString(exclude = {"timestamp", "user"})
+@ToString(exclude = {"timestamp", "user","youtube"})
 public class Curation extends AbstractEntity {
     @Id
     @GeneratedValue()
@@ -24,11 +25,15 @@ public class Curation extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     UserEntity user;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    Youtube youtube;
+
+    @OneToMany(mappedBy = "curation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    List<Timestamp> timestamp = new ArrayList<>();
+
     @Column(length = 20)
     public String title;
-
-    @Column(length = 255)
-    public String youtubeUrl;
 
     @Column()
     public int viewCnt;
@@ -42,13 +47,11 @@ public class Curation extends AbstractEntity {
     @Column(columnDefinition = "boolean default 0")
     public boolean is_private;
 
-    @OneToMany(mappedBy = "curation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    List<Timestamp> timestamp = new ArrayList<>();
 
     @Builder
-    Curation(String title, String youtubeUrl, List<Timestamp> timestamp, UserEntity user) {
+    Curation(String title, Youtube youtube, List<Timestamp> timestamp, UserEntity user) {
         this.title = title;
-        this.youtubeUrl = youtubeUrl;
+        this.youtube = youtube;
         this.timestamp = timestamp;
         this.user = user;
     }

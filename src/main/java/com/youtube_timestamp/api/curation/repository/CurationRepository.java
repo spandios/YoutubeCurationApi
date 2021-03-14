@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface CurationRepository extends JpaRepository<Curation, Long>, CurationCustomRepository {
-    @EntityGraph(attributePaths = {"timestamp"})
+    @EntityGraph(attributePaths = {"timestamp","youtube","user"})
     @Query("select c from Curation c where c.id = ?1 and c.active = true")
     Optional<Curation> findByIdWithJoin(Long id);
 

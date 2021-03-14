@@ -24,6 +24,9 @@ public class Timestamp extends AbstractEntity {
     @Column
     String timestamp;
 
+    @Column
+    String second;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     Curation curation;

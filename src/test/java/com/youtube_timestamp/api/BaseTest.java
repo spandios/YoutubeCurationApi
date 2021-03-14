@@ -87,15 +87,14 @@ public class BaseTest {
         String email = "wndudpower@gmail.com";
         String providerId = "test_provider_id";
         String name = "허주영";
-        AuthDto.LoginRequest loginDto = new AuthDto.LoginRequest();
-        loginDto.provider = SocialProvider.GOOGLE;
-        loginDto.email = email;
-        loginDto.providerId = providerId;
-        loginDto.name = name;
-        authService.socialLogin(loginDto);
-        userEntity = userRepository.findByEmail(email).orElse(null);
-        accessToken = jwtService.createAccessToken(UserEntity.builder().email(email).build());
-        refreshToken = jwtService.createRefreshToken(UserEntity.builder().email(email).build());
+        UserEntity newUserEntity = new UserEntity();
+        newUserEntity.setName(name);
+        newUserEntity.setEmail(email);
+        newUserEntity.setProviderId("$2a$10$emiu0QcGQ//Wwl6cnQ4XjenOtH41Onb0bJwhxCB.c9j4m3I9zbsDi");
+        newUserEntity.setProvider(SocialProvider.GOOGLE);
+        userEntity = userRepository.save(newUserEntity);
+        accessToken = jwtService.createAccessToken(newUserEntity);
+        refreshToken = jwtService.createRefreshToken(newUserEntity);
     }
 
     public void createAdmin() {
