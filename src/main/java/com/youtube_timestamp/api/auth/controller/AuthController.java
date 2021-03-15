@@ -28,16 +28,12 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody AuthDto.LoginRequest login, HttpServletResponse response, Errors errors) {
+    public ResponseEntity login(@Valid @RequestBody AuthDto.LoginRequest login, Errors errors) {
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
         }
+        System.out.println("fewa");
         AuthDto.JwtResponse jwtResponse = authService.socialLogin(login);
-        Cookie accessToken = new Cookie("access_token", jwtResponse.accessToken);
-        Cookie refreshToken = new Cookie("refresh_token", jwtResponse.refreshToken);
-        refreshToken.setHttpOnly(true);
-        response.addCookie(accessToken);
-        response.addCookie(refreshToken);
         return ResponseEntity.ok(jwtResponse);
     }
 

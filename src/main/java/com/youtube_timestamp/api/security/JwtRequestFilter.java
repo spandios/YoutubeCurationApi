@@ -9,12 +9,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Optional;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -30,21 +27,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String username = null;
-        String token = null;
-
-
-        final String requestTokenHeader = request.getHeader("Authorization");
-
-        if (requestTokenHeader == null) {
-            Optional<Cookie> optionalCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("access_token")).findFirst();
-            if (optionalCookie.isPresent()) {
-                token = optionalCookie.get().getValue();
-            }
-        } else {
-            if (requestTokenHeader.startsWith("Bearer ")) {
-                token = requestTokenHeader.substring(7);
-            }
-        }
+        String token = jwtService.getTokenFromHeader(request);
 
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             username = jwtService.getEmailFromToken(token);

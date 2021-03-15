@@ -12,9 +12,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class JwtService {
@@ -30,8 +34,25 @@ public class JwtService {
         return new AuthDto.JwtResponse(accessToken, refreshToken);
     }
 
+    public String getTokenFromHeader(HttpServletRequest request){
+        String token = null;
+        final String requestTokenHeader = request.getHeader("Authorization");
+
+        if (requestTokenHeader == null) {
+            Optional<Cookie> optionalCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("access_token")).findFirst();
+            if (optionalCookie.isPresent()) {
+                token = optionalCookie.get().getValue();
+            }
+        } else {
+            if (requestTokenHeader.startsWith("Bearer ")) {
+                token = requestTokenHeader.substring(7);
+            }
+        }
+        return token;
+    }
+
     public String createAccessToken(UserEntity user) {
-        return createToken(user, plusHour(accessTokenExpiredHour));
+        return createToken(user, plusMinute(accessTokenExpiredHour));
     }
 
     public String createRefreshToken(UserEntity user) {
@@ -65,7 +86,7 @@ public class JwtService {
         return claims.get("email").toString();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -82,6 +103,7 @@ public class JwtService {
                     .parseClaimsJws(token);
             return claimsJws.getBody();
         } catch (Exception e) {
+            System.out.println(e);
             return null;
         }
     }
@@ -93,6 +115,10 @@ public class JwtService {
 
     private Date plusHour(int hour) {
         return Date.from(LocalDateTime.now().plusHours(hour).atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    private Date plusMinute(int m) {
+        return Date.from(LocalDateTime.now().plusMinutes(m).atZone(ZoneId.systemDefault()).toInstant());
     }
 
 
