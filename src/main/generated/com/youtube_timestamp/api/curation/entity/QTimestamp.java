@@ -34,6 +34,8 @@ public class QTimestamp extends EntityPathBase<Timestamp> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final StringPath second = createString("second");
+
     public final StringPath timestamp = createString("timestamp");
 
     public final StringPath title = createString("title");

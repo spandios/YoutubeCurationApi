@@ -12,13 +12,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 public class JwtService {
@@ -37,22 +34,22 @@ public class JwtService {
     public String getTokenFromHeader(HttpServletRequest request){
         String token = null;
         final String requestTokenHeader = request.getHeader("Authorization");
-
-        if (requestTokenHeader == null) {
-            Optional<Cookie> optionalCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("access_token")).findFirst();
-            if (optionalCookie.isPresent()) {
-                token = optionalCookie.get().getValue();
-            }
-        } else {
-            if (requestTokenHeader.startsWith("Bearer ")) {
-                token = requestTokenHeader.substring(7);
-            }
-        }
+        token = requestTokenHeader.substring(7);
+//        if (requestTokenHeader == null) {
+//            Optional<Cookie> optionalCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("access_token")).findFirst();
+//            if (optionalCookie.isPresent()) {
+//                token = optionalCookie.get().getValue();
+//            }
+//        } else {
+//            if (requestTokenHeader.startsWith("Bearer ")) {
+//                token = requestTokenHeader.substring(7);
+//            }
+//        }
         return token;
     }
 
     public String createAccessToken(UserEntity user) {
-        return createToken(user, plusMinute(accessTokenExpiredHour));
+        return createToken(user, plusHour(accessTokenExpiredHour));
     }
 
     public String createRefreshToken(UserEntity user) {

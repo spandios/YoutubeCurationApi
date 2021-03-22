@@ -55,7 +55,7 @@ public class QCuration extends EntityPathBase<Curation> {
 
     public final NumberPath<Integer> viewCnt = createNumber("viewCnt", Integer.class);
 
-    public final StringPath youtubeUrl = createString("youtubeUrl");
+    public final com.youtube_timestamp.api.youtube.entity.QYoutube youtube;
 
     public QCuration(String variable) {
         this(Curation.class, forVariable(variable), INITS);
@@ -76,6 +76,7 @@ public class QCuration extends EntityPathBase<Curation> {
     public QCuration(Class<? extends Curation> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.user = inits.isInitialized("user") ? new com.youtube_timestamp.api.user.entity.QUserEntity(forProperty("user")) : null;
+        this.youtube = inits.isInitialized("youtube") ? new com.youtube_timestamp.api.youtube.entity.QYoutube(forProperty("youtube")) : null;
     }
 
 }

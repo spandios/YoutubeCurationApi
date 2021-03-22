@@ -14,6 +14,10 @@ public interface CurationRepository extends JpaRepository<Curation, Long>, Curat
     @Query("select c from Curation c where c.id = ?1 and c.active = true")
     Optional<Curation> findByIdWithJoin(Long id);
 
+    @EntityGraph(attributePaths = {"timestamp"})
+    @Query("select c from Curation c where c.id = ?1 and c.active = true")
+    Optional<Curation> findByIdWithTimestamp(Long id);
+
     @Query("select c from Curation c where c.active = true and c.is_private = false")
     Page<Curation> pageable(Pageable pageable);
 }

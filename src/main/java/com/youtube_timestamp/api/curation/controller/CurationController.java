@@ -5,9 +5,12 @@ import com.youtube_timestamp.api.common.exception.UnAuthorizedException;
 import com.youtube_timestamp.api.curation.dto.CurationCreateDTO;
 import com.youtube_timestamp.api.curation.dto.CurationDetailResponse;
 import com.youtube_timestamp.api.curation.dto.CurationListResponse;
+import com.youtube_timestamp.api.curation.dto.TimestampUpdateDTO;
 import com.youtube_timestamp.api.curation.entity.Curation;
+import com.youtube_timestamp.api.curation.entity.Timestamp;
 import com.youtube_timestamp.api.curation.service.CurationService;
 import com.youtube_timestamp.api.curation.service.CurationTodayCntService;
+import com.youtube_timestamp.api.curation.service.TimestampServiceImpl;
 import com.youtube_timestamp.api.security.CurrentUser;
 import com.youtube_timestamp.api.security.Jwt;
 import com.youtube_timestamp.api.user.service.UserService;
@@ -18,8 +21,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController()
@@ -29,14 +30,16 @@ public class CurationController {
 
     private final CurationService curationService;
 
+    private final TimestampServiceImpl timestampService;
     private final CurationTodayCntService curationTodayCntService;
 
     private final JwtService jwtService;
 
     private final UserService userService;
 
-    public CurationController(CurationService curationService, CurationTodayCntService curationTodayCntService, JwtService jwtService, UserService userService) {
+    public CurationController(CurationService curationService, TimestampServiceImpl timestampService, CurationTodayCntService curationTodayCntService, JwtService jwtService, UserService userService) {
         this.curationService = curationService;
+        this.timestampService = timestampService;
         this.curationTodayCntService = curationTodayCntService;
         this.jwtService = jwtService;
         this.userService = userService;
@@ -52,16 +55,15 @@ public class CurationController {
         }
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity detail(HttpServletRequest request, HttpServletResponse response, @Jwt CurrentUser cu, @PathVariable("id") Long id) {
-        Curation curation = curationService.findByIdWithJoin(id);
+    @GetMapping("me/{id}")
+    ResponseEntity detail(@Jwt CurrentUser cu, @PathVariable("id") Long curationId) {
+        Curation curation = curationService.findByIdWithJoin(curationId);
         curationTodayCntService.viewCuration(curation);
         curationService.view(curation);
         CurationDetailResponse dResponse = new CurationDetailResponse(curation);
         if (cu != null) {
             System.out.println("cu:" + cu.getEmail());
         }
-        String curationUserEmail = curation.getUser().getEmail();
         if (cu != null) {
             if (curation.getUser().getEmail().equals(cu.getEmail())) {
                 dResponse.setYours(true);
@@ -69,6 +71,12 @@ public class CurationController {
         }
 
         return ResponseEntity.ok(dResponse);
+    }
+
+    @PutMapping("me/{id}/timestamp")
+    ResponseEntity updateTimestamp(@Jwt CurrentUser cu, @RequestBody TimestampUpdateDTO dto){
+        Timestamp timestamp = timestampService.updateTimestamp(dto);
+        return ResponseEntity.ok(timestamp);
     }
 
     @GetMapping("")

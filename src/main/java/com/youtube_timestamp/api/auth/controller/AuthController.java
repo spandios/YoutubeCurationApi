@@ -28,12 +28,15 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody AuthDto.LoginRequest login, Errors errors) {
+    public ResponseEntity login(@Valid @RequestBody AuthDto.LoginRequest login, HttpServletResponse response, Errors errors) {
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
         }
-        System.out.println("fewa");
         AuthDto.JwtResponse jwtResponse = authService.socialLogin(login);
+        Cookie accessCookie = authService.createAccessCookie(jwtResponse.accessToken);
+        Cookie refreshCookie = authService.createRefreshCookie(jwtResponse.refreshToken);
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
         return ResponseEntity.ok(jwtResponse);
     }
 
@@ -41,8 +44,8 @@ public class AuthController {
     public ResponseEntity refresh(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("refresh_token")).findFirst().orElseThrow(() -> new UnAuthorizedException("재발급 토큰이 없습니다.")).getValue();
         String accessToken = authService.refreshToken(refreshToken);
-        Cookie cookie = new Cookie("access_token", accessToken);
-        response.addCookie(cookie);
+        Cookie accessCookie = authService.createAccessCookie(accessToken);
+        response.addCookie(accessCookie);
         AuthDto.JwtResponse jwtResponse = new AuthDto.JwtResponse(accessToken);
         return ResponseEntity.ok(jwtResponse);
     }

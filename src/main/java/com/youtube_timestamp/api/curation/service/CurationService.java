@@ -6,6 +6,7 @@ import com.youtube_timestamp.api.curation.dto.CurationCreateDTO;
 import com.youtube_timestamp.api.curation.entity.Curation;
 import com.youtube_timestamp.api.curation.entity.CurationTodayCnt;
 import com.youtube_timestamp.api.curation.repository.CurationRepository;
+import com.youtube_timestamp.api.curation.repository.TimestampRepository;
 import com.youtube_timestamp.api.user.entity.UserEntity;
 import com.youtube_timestamp.api.user.repository.UserRepository;
 import com.youtube_timestamp.api.user.service.UserService;
@@ -41,6 +42,9 @@ public class CurationService {
     private YoutubeRepository youtubeRepository;
 
     @Autowired
+    private TimestampRepository timestampRepository;
+
+    @Autowired
     private UserService userService;
 
     private NotFoundException notFoundCuration() {
@@ -59,6 +63,10 @@ public class CurationService {
         return repository.findByIdWithJoin(id).orElseThrow(this::notFoundCuration);
     }
 
+    public Curation findByIdWithTimestamp(Long id) {
+        return repository.findByIdWithTimestamp(id).orElseThrow(this::notFoundCuration);
+    }
+
     public void view(Curation curation) {
         curation.setViewCnt(curation.viewCnt + 1);
         repository.save(curation);
@@ -66,21 +74,22 @@ public class CurationService {
 
     public Curation create(CurationCreateDTO dto) {
         Optional<UserEntity> byEmail = userRepository.findByEmailAndActiveTrue(dto.getUserEmail());
-        if(byEmail.isPresent()){
+        if (byEmail.isPresent()) {
             Curation curation = dto.toEntity();
             Youtube youtube = dto.getYoutube();
             Optional<Youtube> optionalYoutube = youtubeRepository.findById(youtube.getId());
-            if(optionalYoutube.isPresent()){
+            if (optionalYoutube.isPresent()) {
                 curation.setYoutube(optionalYoutube.get());
-            }else{
+            } else {
                 curation.setYoutube(youtubeRepository.save(youtube));
             }
             curation.setUser(byEmail.get());
             curation.getTimestamp().forEach(timestampEntity -> timestampEntity.setCuration(curation));
             return repository.save(curation);
-        }else{
+        } else {
             throw new UnAuthorizedException();
         }
+
     }
 
     public Curation update(Curation dto) {

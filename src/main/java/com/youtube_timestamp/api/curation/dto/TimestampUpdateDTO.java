@@ -7,4 +7,6 @@ public class TimestampUpdateDTO {
     public Long id;
     public String title;
     public String timestamp;
+    public String second;
 }
+

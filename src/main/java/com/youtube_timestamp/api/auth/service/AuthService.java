@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+
 @Service
 @Slf4j
 public class AuthService {
@@ -24,6 +26,18 @@ public class AuthService {
         this.userService = userService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public Cookie createAccessCookie(String access_token){
+        Cookie cookie = new Cookie("access_token", access_token);
+        cookie.setMaxAge(1000 * 60 * 60);
+        return cookie;
+    }
+
+    public Cookie createRefreshCookie(String refresh_token){
+        Cookie cookie = new Cookie("refresh_token", refresh_token);
+        cookie.setMaxAge(1000 * 60 * 60 * 24);
+        return cookie;
     }
 
 
@@ -55,6 +69,7 @@ public class AuthService {
     }
 
     public String refreshToken(String refreshToken) {
+        System.out.println("REFRESH TOKEN : "+ refreshToken);
         String email = jwtService.getEmailFromToken(refreshToken);
         if (email == null)
             throw new UnAuthorizedException();

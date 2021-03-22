@@ -29,8 +29,8 @@ public class Curation extends AbstractEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     Youtube youtube;
 
-    @OneToMany(mappedBy = "curation", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    List<Timestamp> timestamp = new ArrayList<>();
+    @OneToMany(mappedBy = "curation", fetch = FetchType.LAZY, cascade = CascadeType.ALL , orphanRemoval = true)
+    public List<Timestamp> timestamp = new ArrayList<>();
 
     @Column(length = 20)
     public String title;

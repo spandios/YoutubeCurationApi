@@ -31,4 +31,11 @@ public class Timestamp extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     Curation curation;
 
+
+    public Timestamp(String title, String timestamp, String second, Curation curation) {
+        this.title = title;
+        this.timestamp = timestamp;
+        this.second = second;
+        this.curation = curation;
+    }
 }
