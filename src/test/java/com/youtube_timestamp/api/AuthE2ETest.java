@@ -71,7 +71,7 @@ public class AuthE2ETest extends BaseTest {
 
     @Test
     public void 토큰재발급() throws Exception {
-        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        Cookie cookie = new Cookie("refresh_token", refreshToken);
         mockMvc.perform(postRequest(domain + "/refresh_token", null).cookie(cookie)).andExpect(status().isOk()).andDo(print());
     }
 

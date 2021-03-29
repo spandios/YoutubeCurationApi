@@ -3,6 +3,7 @@ package com.youtube_timestamp.api.curation.service;
 import com.youtube_timestamp.api.common.exception.BadRequestException;
 import com.youtube_timestamp.api.curation.dto.TimestampCreateDTO;
 import com.youtube_timestamp.api.curation.dto.TimestampUpdateDTO;
+import com.youtube_timestamp.api.curation.entity.Curation;
 import com.youtube_timestamp.api.curation.entity.Timestamp;
 import com.youtube_timestamp.api.curation.repository.TimestampRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class TimestampServiceImpl {
 
     @Autowired
     private TimestampRepository repository;
+
+    @Autowired
+    private CurationService curationService;
 
     public void deleteTimestamp(Long id) {
 
@@ -32,7 +36,9 @@ public class TimestampServiceImpl {
         return repository.save(byId);
     }
 
-    public void addTimestamp(TimestampCreateDTO dto) {
-
+    public Timestamp addTimestamp(TimestampCreateDTO dto) {
+        Curation curation = curationService.findById(dto.curationId);
+        Timestamp timestamp = new Timestamp(dto.title, dto.timestamp, dto.second,curation);
+        return repository.save(timestamp);
     }
 }

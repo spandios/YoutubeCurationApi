@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class TimestampCreateDTO {
-    public Long id;
+    public Long curationId;
     public String title;
     public String timestamp;
+    public String second;
 }

@@ -21,8 +21,8 @@ import java.util.Date;
 public class JwtService {
     @Value("${jwt.secret_key}")
     private String key; // 토큰 암호화키
-    private static final int accessTokenExpiredHour = 1;
-    private static final int refreshTokenExpiredDay = 24;
+    private static final int accessTokenExpiredHour = 3;
+    private static final int refreshTokenExpiredDay = 24 * 15;
 
 
     public AuthDto.JwtResponse createToken(UserEntity user) {
@@ -35,16 +35,6 @@ public class JwtService {
         String token = null;
         final String requestTokenHeader = request.getHeader("Authorization");
         token = requestTokenHeader.substring(7);
-//        if (requestTokenHeader == null) {
-//            Optional<Cookie> optionalCookie = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("access_token")).findFirst();
-//            if (optionalCookie.isPresent()) {
-//                token = optionalCookie.get().getValue();
-//            }
-//        } else {
-//            if (requestTokenHeader.startsWith("Bearer ")) {
-//                token = requestTokenHeader.substring(7);
-//            }
-//        }
         return token;
     }
 

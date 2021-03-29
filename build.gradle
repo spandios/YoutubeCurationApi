@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+    id 'com.google.cloud.tools.jib' version '1.8.0'
 }
 
 group = 'com.youtube_timestamp'
@@ -69,6 +70,25 @@ compileQuerydsl{
     options.annotationProcessorPath = configurations.querydsl
 }
 
+jib {
+    from {
+        image = "adoptopenjdk/openjdk11:alpine"
+    }
+    to {
+        image = "257342555568.dkr.ecr.ap-northeast-2.amazonaws.com/ycapi"
+        credHelper = 'ecr-login'
+        tags = ['latest', "${project.name}-" + System.currentTimeMillis()]
+    }
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        // Set JVM options.
+        jvmFlags = ['-Dspring.profiles.active=prodction', '-XX:+UseContainerSupport', '-Dserver.port=3100', '-XX:+DisableExplicitGC', '-Dfile.encoding=UTF-8']
+        // Expose different port.
+        ports = ['3100', '3100']
+        // Add labels.
+        user = "heo:youtube"
+    }
+}
 configurations {
     querydsl.extendsFrom compileClasspath
 }

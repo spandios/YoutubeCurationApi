@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @Getter
 @NoArgsConstructor
-public class Timestamp extends AbstractEntity {
+public class Timestamp extends AbstractEntity implements Comparable<Timestamp> {
     @Id
     @GeneratedValue()
     Long id;
@@ -37,5 +37,21 @@ public class Timestamp extends AbstractEntity {
         this.timestamp = timestamp;
         this.second = second;
         this.curation = curation;
+    }
+
+    @Override
+    public int compareTo(Timestamp time2) {
+        if(second != null && time2.getSecond() != null){
+            double second1 = Double.parseDouble(this.second);
+            double second2 = Double.parseDouble(time2.getSecond());
+            if (second1 > second2) {
+                return 1;
+            } else if (second1 == second2) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+        return 0;
     }
 }
