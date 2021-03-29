@@ -34,7 +34,9 @@ public class JwtService {
     public String getTokenFromHeader(HttpServletRequest request){
         String token = null;
         final String requestTokenHeader = request.getHeader("Authorization");
-        token = requestTokenHeader.substring(7);
+        if(requestTokenHeader!=null){
+            token = requestTokenHeader.substring(7);
+        }
         return token;
     }
 

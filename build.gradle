@@ -80,6 +80,11 @@ jib {
         tags = ['latest', "${project.name}-" + System.currentTimeMillis()]
     }
     container {
+        environment = [
+                "JAVA_TOOL_OPTIONS": "-Xmx2048m -XX:+UseG1GC",
+                "SPRING_PROFILES_ACTIVE": "production",
+                "TZ": "Asia/Seoul"
+        ]
         creationTime = "USE_CURRENT_TIMESTAMP"
         // Set JVM options.
         jvmFlags = ['-Dspring.profiles.active=prodction', '-XX:+UseContainerSupport', '-Dserver.port=3100', '-XX:+DisableExplicitGC', '-Dfile.encoding=UTF-8']

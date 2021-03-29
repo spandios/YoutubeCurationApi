@@ -18,6 +18,10 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://www.youtubecuration.com");
+        config.addAllowedOrigin("https://youtubecuration.com");
+        config.addAllowedOrigin("http://youtubecuration.com");
+        config.addAllowedOrigin("http://www.youtubecuration.com");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
         config.addAllowedMethod(HttpMethod.OPTIONS);

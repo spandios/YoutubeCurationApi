@@ -48,8 +48,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests().antMatchers("/api/v1/auth/login", "/api/v1/auth/refresh_token", "/api/v1/health_check", "/api/v1/curation/pop","/actuator").permitAll()
-                .anyRequest().authenticated().and().exceptionHandling()
+                .authorizeRequests().antMatchers("/api/v1/auth/login", "/api/v1/auth/refresh_token", "/api/v1/health_check", "/api/v1/curation/pop","/actuator","/").permitAll()
+                .anyRequest().permitAll().and().exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
 
